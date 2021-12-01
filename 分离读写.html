@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>分离读写</title>
+    <style>
+        #box{
+            width: 100px;
+            height: 100px;
+            background: red;
+            border: 2px solid greenyellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="box"></div>
+    <script>
+        let box = document.getElementById("box");
+        /*
+            现代浏览器的渲染队列的机制：当执行代码引发第一次回流后，执行完这行代码后浏览器并没有马上在页面绘制这行代码的效果，它会先判断下一行代码是否也是在修改样式，
+            如果是则继续执行以此类推，如果不是则马上在页面绘制效果，则引发了一次回流。
+        */
+        box.style.width = "200px"; //引发第一次回流
+        box.style.height = "200px";//这里第一次回流结束，因为下边一句代码不是在修改样式
+        console.log(box.clientHeight);
+        box.style.margin = "2px";//引发第二次回流
+
+        /*
+            分离读写：把操作样式和获取样式的操作分开写，读取和写入的分离就叫分离读写。
+        */
+        //上边的代码可以这样优化，只引发一次回流
+        box.style.width = "200px"; 
+        box.style.height = "200px";
+        box.style.margin = "2px";
+        console.log(box.clientHeight);
+
+        //批量处理
+        box.style.cssText="width:200px;height:200px;margin:2px;";//或者给元素加一个类，在这个类上加样式
+
+        //缓存处理,其实就是分离读写
+        let a = box.clientWidth;
+        let b = box.clientHeight;
+        box.style.width = a + 10 + "px";
+        box.style.width = b + 10 + "px";
+    </script>
+
+
+</body>
+</html>

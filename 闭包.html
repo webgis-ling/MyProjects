@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>闭包的理解</title>
+</head>
+<body>
+    <script>
+        // 一个问题：谈谈你对闭包的理解？ 闭包什么时候产生的，闭包是啥，为什么要有闭包，闭包的优缺点，应用
+        // 三连问或者五连问：什么是闭包？为什么要用闭包？闭包有什么作用？闭包有什么优缺点？
+
+
+        //执行函数定义（定义的函数执行了，里面的函数体代码没有执行）和执行函数（就是调用函数，内部函数体代码执行了）是两个概念
+        
+        // 情况1
+        // function fn1(){
+        //     var a = 10;
+        //     // fn2是引用变量，存储的是该函数对象所在内存空间的地址，此时就说明函数对象已经创建了
+        //     function fn2(){
+        //         a++;
+        //         console.log(a);
+        //     }
+        //     return fn2;
+        // }
+        // fn1();
+        // var f = fn1();
+        // f();
+
+        /*
+        执行外部函数，内部函数使用到了外部函数的变量，执行内部函数定义（或者内部函数对象创建了），此时可以形成闭包。
+        执行外部函数，内部函数中没有用到外部函数的变量，此时执行内部函数定义，则没有形成闭包
+        fn1函数调用后，函数内部中的局部变量或者说局部作用域中所使用的数据全部释放了，但是fn1函数调用后返回的fn2是一个引用变量，
+        该变量中存储的是fn2函数对象所在的空间的地址，此时f和fn2中存储的函数对象，还有着引用关系，既然有引用关系，那么就说明，fn1调用后，
+        内部的数据被缓存起来了，没有被释放，所以，f函数调用后，可以再次进入到fn2函数中（不是此时形成的闭包，而是再用这个闭包，闭包在之前fn1就已经形成了）
+        */
+
+
+
+        // 情况2
+        function fn1(){
+            var a = 10;
+            var fn2 = function(){
+                a++;
+                console.log(a);
+            }
+            return fn2;
+        }
+        var f = fn1();
+        f();
+
+        // 函数有嵌套，外部函数也调用了，内部函数使用了外部函数的变量，但是内部函数是表达式的方式，只有内部函数定义执行了，那么此时才能形成闭包，如果fn2
+        // 引用变量还是undefined，此时没有执行， 那么闭包就没有产生。
+
+
+
+
+
+        
+        // var name = 'The Window';
+        // var object = {
+        //     name: 'My Project',
+
+        //     getNameFunc: function(){
+        //         return function(){
+        //             return this.name;
+        //         }
+        //     }
+        // }
+
+        // console.log(object.getNameFunc()());
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>ES6中的继承</title>
+   </head>
+   <body>
+       <script type="text/javascript">
+        /*
+        继承（改变原型指向/借用构造函数/组合/拷贝）
+            方式一：基于构造函数的继承，原型链 + 借用构造函数的组合继承
+                * 借用父类型构造函数：Person.call(this, name, age)
+                * 让子类的原型为父类的实例：Student.prototype = new Person()
+                * 让子类型原型的构造器为子类型：Student.prototype.constructor = Student
+        */
+        // 通过原型实现继承
+        // function Person(name, age, gender){
+        //     this.name = name;
+        //     this.age = age;
+        //     this.gender = gander;
+        // }
+        // Person.prototype.sayHi = function(){
+        //     console.log("您好！");
+        // }
+        // Person.prototype.eat = function(){
+        //     console.log("好吃！");
+        // }
+
+        // function Student(name, age, genger, score){
+        // // 借用构造函数实现属性的继承
+        // Person.call(this, name, age, gender);
+        //     this.score = score;
+        // }
+        // // 原型实现方法的继承
+        // Student.prototype = new Person();
+        // Student.prototype.constructor = Student;
+        // // 重写方法
+        // Student.prototype.eat = function(){
+        //     cosnole.log("学生吃！");
+        // }
+        // var stu = new Student("小明", 20, "男", 100);
+        // stu.sayHi();
+        // stu.eat();
+        // console.log(stu);
+
+        /*
+        方式二：基于class/类的继承
+            * 子类extents 父类：class Teacher extents Person2
+            * 子类构造器中调用父类的构造：super(name, age)
+        */
+       // ES6的方式实现继承
+       class Person{
+           // 构造器
+           constructor(name, age){
+               this.name = name;
+               this.age = age;
+           }
+           // 原型上的方法
+           sayHi(){
+               console.log('您好！');
+           }
+
+           // 赋值的写法就是给实例添加属性或者方法
+           // 实例属性
+           sex = '男';
+           eat = () =>{
+               console.log('好吃啊!');
+           }
+           // 静态属性--构造函数对象使用的----Person引用变量来使用的（使用例子：Array.isArray()）
+           static gender = '男';
+       }
+       var per = new Person('小明', 20);
+       console.log(per);
+       console.dir(per);
+       console.log(per.gender) // undefined
+       console.log(Person.gender) // 男
+
+       class Student extends Person{
+           constructor(name, age, gender){
+               // 相当于.call结构构造函数实现属性的继承
+               super(name, age);
+               this.gender = gender;
+           }
+           // 父类中有sayHi ，子类的实例对象可以直接使用，如果子类的实例对象调用该方法的时候，需要显示自己的结果，则此时可以重写父类中的方法
+           sayHi() {
+               console.log('我很好！');
+           }
+       }
+
+       var stu = new Student('小明', 20, '男');
+       console.log(stu);
+       stu.sayHi();
+       </script>
+   </body>
+</html>

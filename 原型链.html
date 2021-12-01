@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>原型链</title>
+   </head>
+   <body>
+       <script type="text/javascript">
+        // 构造函数
+        function Foo(){}
+        // f1 是实例对象------引用变量 存储的是当前的这个对象所在的空间的地址
+        const f1 = new Foo()
+        // f2 是实例对象
+        const f2 = new Foo()
+        // o1 是实例对象
+        const o1 = new Object();
+        // o2 是实例对象
+        const o2 = {}
+        //对于instanceOf的理解
+        /*
+        作用：判断一个任意类型对象的具体类型
+        如何判断？
+            * 对于A instanceof B
+            * A是实例对象，B是构造函数
+            * 如果B的prototype属性所指向的原型对象是A实例对象的原型链上的某个对象，则返回true，否则返回false
+        */
+        // 可以看 原型链.png 
+        console.log(Foo instanceof Object) // true
+        console.log(Foo instanceof Function) // true
+        console.log(Function instanceof Function) // true
+        console.log(Function instanceof Object) //true
+        console.log(Object instanceof Foo) //false
+        console.log(f1 instanceof Function) // false
+        console.log(f1 instanceof Object) // true
+       </script>
+   </body>
+</html>

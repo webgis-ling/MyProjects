@@ -1,0 +1,4 @@
+webpack-dev-server小知识，onProxyReq是干嘛的？
+dev-server的proxy有两个事件“onProxyReq”，“onProxyRes”，可以在请求发送前和响应后对请求内容进行更改。
+onProxyReq的第一个参数proxyReq是node http.ClientRequest的实例，后两个参数req和res分别是Express框架封装的Request对象和Response对象
+onProxyRes的第一个参数proxyRes则是 node http.IncomingMessage的实例，内置的方法及属性都有所不同

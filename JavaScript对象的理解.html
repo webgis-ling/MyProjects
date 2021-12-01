@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>JavaScript对象的理解</title>
+    </head>
+    <body>
+        <script type="text/javascript">
+            /*
+            谈谈你对面向对象的理解？
+            1.面向过程和面向对象都是一种编程思想
+            2.面向过程：凡事都是亲历亲为，注重的是过程
+            3.面向对象：提出需求，抽取出对象，调用对象相关属性或者方法，获取结果
+            4.面向对象的特性：封装，继承，多态，（抽象性）
+            5.对象：
+                手机，电脑，汽车等是对象吗？都不是，这些都是抽象的，没有实际指的是具体的东西
+                而对象是具体特指的是某个东西，看得见，摸得着的，比如手里拿着的HUEWEI Mate30 Pro手机，桌子上的那台惠普电脑笔记本，门外停着的宝马X5，这些才是对象。切确的一个对象。
+                *****对象就是具有特征或者行为的特质（属性和方法）的某个事物
+            6.面向对象的编程思想---->
+                需求：通过手机打电话，分析出里边的对象，具有什么样的特征和行为，对象是什么类型的，此时这些都是分析的（过程）结果------抽取出对象以及特征和行为
+                实现：通过代码实现对象调用对应的属性和方法
+                特征---->属性，行为----->方法
+            */
+            //实现过程：先定义手机对象的类型（通过构造函数来定义，通过new 构造函数来实例化对象）
+            //定义构造函数
+            function Phone(color, weight){
+                //手机对象的特征
+                this.color = color;
+                this.weight = weight;
+                //手机对象的行为
+                this.call = function(){
+                    console.log("您好，我是张三");
+                }
+            }
+
+            //通过构造函数创建对应的一个具体的对象（实例化对象）
+            //实例化对象过程同时进行初始化
+            let phone = new Phone('银色', '50g');
+            phone.call();
+            //对象的一个最大的特点就是多实现，以后如果有类似的需求，直接实例化就能实现需求。
+
+
+            //创建对象的方式
+            /*
+            1.通过字面量的方式
+            var obj = {};
+            2.通过工厂模式创建
+            function Phone(name, age){
+                let obj = new Object();
+                obj.name = name;
+                obj.age = age;
+                return obj;
+            }
+            3.通过构造函数的方式
+            function Phone(color, weight){
+                //手机对象的特征
+                this.color = color;
+                this.weight = weight;
+                //手机对象的行为
+                this.call = function(){
+                    console.log("您好，我是张三");
+                }
+            }
+           
+            */
+           // 4.通过class关键字方式（类的方式）
+            class Phone{
+                //构造器，构造器中的属性，最终都是在实例对象上的
+                constructor(color,weight){
+                    this.color = color;
+                    this.weight = weight;
+                }
+                //在原型上
+                sendMessage(){
+                    console.log("发短信");
+                }
+                //class中书写方法的时候，如果方法使用的是 = 赋值符号的方式来定义的那么方法在实例上
+                //在实例上
+                call = ()=>{
+                    console.log("打电话");
+                }
+            }
+
+            //为什么要在class中定义方法还要区分在原型上还是在实例上？
+            function Person(name, age){
+                this.name = name;
+                this.age = age;
+                this.sayHello = function(){
+                    console.log("你好呀！");
+                }
+            }
+
+            let p1 = new Person("小明", 20);
+            let p2 = new Person("小明", 20);
+            //这里是true还是false?  结果是false，说明两个对象都有自己的sayHello方法，如果有多个对象，那么就会出现多个对象占用多块空间用来存储自己的方法的情况，浪费内存
+            //既然方法中的的内容都是一样的，那么方法就该放在原型上，占用一块空间，节省内存空间，实现数据共享
+            console.log(p1.sayHello === p2.sayHello);
+
+            //eat方法在原型上
+            Person.prototype.eat = function(){
+
+            }
+            console.log(p1.eat === p2.eat);//返回true，因为eat方法是在原型上
+
+
+
+            //5.单例模式创建对象
+            //单例模式：不管该对象创建多少次，实际上最终对象只有一个
+
+            //简单的单例模式创建对象
+            function createObj(){
+                var instance = null;
+                return function(name){
+                    if(!instance){
+                        //创建对象
+                        instance = new Object();
+                        //初始化对象属性值
+                        instance.name = name;
+                    }
+                    //instance 对象已经创建完毕了，此时是存在的
+                    return instance;
+                }
+            }
+            
+            var getObj = createObj();
+            var obj3 = getObj("小明");
+            var obj4 = getObj("小红");
+            console.log(obj3,obj4);//输出的对象的名称都是'小明'
+            console.log(obj3 === obj4);//结果是true
+
+            //单例模式的应用：一个页面中有多个轮播图的效果，如果说此时为了实现轮播图的效果，那么就会创建对应多个swiper的对象，此时可以用单例模式的方式，只创建一个对象，节省空间。
+        </script>
+    </body>
+</html>
