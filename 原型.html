@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatile" content="ie=edge">
+        <title>js的原型</title>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+        // 执行函数定义 和 执行函数 的区别
+        // f1是什么？ f1是函数，f1也是函数名，还可以叫引用变量
+        // 因为在内存中的存储过程是：f1在栈内存中存储了一个地址，地址指向堆内存里的一块空间，这块空间就存储了f1函数的代码
+
+        //函数定义（函数声明和函数表达式）
+        // f1这个函数是是函数声明的写法
+        // function f1(){ // 执行函数定义
+        //     console.log('f1函数')
+        // }
+        // console.log(f1);//输出f1函数代码
+        // f1();   //代码的解释？函数的调用-----执行函数
+
+
+
+
+        /*
+        原型什么时候产生的？
+        执行函数定义的时候，prototype显示原型就创建出来了，由于函数本身也是对象（实例对象），里面隐式原型__proto__也产生了
+        
+        1.原型就是对象，JS中原型一共有两个，一个是prototype，一个是__proto__属性
+            - prototype：浏览器的标准属性，程序员使用的，显示原型，存在于函数中
+            - __proto__：浏览器的非标准属性，浏览器使用的，隐式原型，存在于实例对象中
+            - 函数中又prototype，实例对象中有__proto__
+            - 实例对象也是对象，里面就有__proto__
+            - 实例对象的__proto__与对应的prototype都指向原型对象（理解：看图  __proto__和对应prototype指向同一个原型对象.png）
+            - 无论是构造函数还是普通的函数，或者是方法，只要是函数，内部就会有prototype
+        2.原型的作用之一：共享数据，节省内存空间
+            （1）实例对象一般都是通过构造函数进行创建的实例化对象的时候做这四件事：
+                - var per = new Person();
+                1）申请一块空闲的空间，用来存储当前的实例对象
+                2）设置this为当前的实例对象（修改this指向）
+                3）初始化实例对象中的属性和方法的值
+                4）把this作为当前的对象进行返回
+            （2）在构造函数中定义的属性和方法，仅仅是编写代码进行定义而已，而实际上里面定义的属性及方法是属于每一个实例对象的，所以，创建多个对象，就会开辟多个空间，
+                每个空间的每个对象都有自己的属性及方法，大量创建对象，对象的方法都不是同一个方法，（方法也是函数，函数代码占用空间），为了节省内存空间，那么可以使用原型的方式，
+                实现数据共享，节省内存空间
+        3.原型的作用之二：实现JS中的继承
+            （1）通过改变原型指向实现继承
+            （2）借用构造函数实现继承
+            （3）组合继承
+            （4）拷贝继承：浅拷贝和深拷贝（详细看递归笔记）
+        */
+         
+        
+
+        //原型的作用1：节省空间，实现数据的共享
+        //原型的理解
+        
+        //构造函数
+        // function Person(name){
+        //     this.name = name;
+        //     this.eat = function(){
+        //         console.log('我要吃饭！');
+        //     }
+        // }
+        //实例化对象并初始化
+        /*
+        此时堆内存中开辟了两块空间，一个存储了实例化对象p1,一个存储了实例化对象p2，而每个实例化对象中分别又存储了各自对应的eat方法，
+        各自占用了一块空间，这样会占用内存。这时可以通过原型的方式实现数据的共享
+        */
+        //通过原型实现数据的共享
+        // Person.prototype.play = function(){
+        //     console.log('我要去玩！');
+        // }
+        // var p1 = new Person('小明');//单独等号右边的部分（new Person()）称为匿名对象
+        // var p2 = new Person('小红');
+        // console.log(p1.eat === p2.eat);//输出false，说明是各自对象中的方法，存储地址不一样
+        // p1.eat();
+        // p2.eat();
+        // console.log(p1.play === p2.play);  //输出true，调用原型的方法
+
+
+        //原型的作用2：实现继承
+        //通过改变原型实现继承
+        function Person(name){
+            this.name = name;
+        }
+        Person.prototype.sayHi = function(){
+            console.log('你好呀！');
+        }
+        function Student(name,age){
+            // this.name = name;
+            //借用构造函数的方式来实现属性的继承
+            //两个写法都行
+            Person.call(this.name);
+            Person.call(this,name);
+            this.age = age;
+        }
+        //通过改变原型实现继承，可以使用父级类别中的方法(方法的继承)
+        Student.prototype = new Person('小红');
+        var stu = new Student('小明',20);
+        stu.sayHi();
+        console.log(stu.name,stu.age);
+        //通过改变原型指向实现的是方法的继承，通过借用构造函数的方式实现的是属性的继承，二者结合在一起成为：组合继承-------比较常用
+
+
+        //对象的属性调用
+        var obj = {
+            name:'小明',//值是字符串类型
+            age:10,//值是数值类型
+            sayHi:function(){}//值是函数类型
+        }
+        //obj中都是属性，属性调用
+        console.log(obj.name)
+        console.log(obj['name'])
+        var key = 'name';
+        //obj.key这么书写可以，但是意义不大，此时的key是当成属性来使用的
+        console.log(obj[key]);
+        console.log(obj.key);//结果是undefined，应用：Vue中可以使用v-if或者v-show来显示或者隐藏一个数据的效果，这里推荐使用v-if，因为v-show已经创建了dom，页面会显示undefined，只是被隐藏了
+
+        /*
+        总结：
+            原型的理解：原型什么时候产生--->原型有哪些----->原型的作用---->继承的实现---->面向对象的编程思想---->面向过程---->了解数据的共享，和数据的缓存----->闭包----->预解析---->执行上下文
+            原型的应用：Vue中的事件总线---->Vue中组件通信的各种方式
+            Vue.prototype.$bus = new Vue()
+            Vue.prototype.$API = API //任意的组件都可以直接调用api方法，调用接口，发送请求
+        */
+        </script>
+    </body>
+</html>
