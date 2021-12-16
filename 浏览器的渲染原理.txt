@@ -6,7 +6,8 @@ DOM的重绘和回流 Repaint & Reflow
 	重绘：元素样式的改变（但宽高，大小，位置等不变）
 		如：outline，visibility，color，background-color等
 	回流：元素的大小或者位置发生了改变（当页面布局和几何信息发生改变的时候），触发了重新布局，导致渲染树重新计算布局和渲染
-		如添加或者删除可见的DOM元素，元素的位置发生变化，元素的尺寸发生变化，内容发生变化（比如文本变化或者图片被另一个不同尺寸的图片所代替），页面一开始渲染的时候（这个无法避免）；
+		如添加或者删除可见的DOM元素，元素的位置发生变化，元素的尺寸发生变化，内容发生变化（比如文本变化或者图片被另一个不同尺寸的图片所代替），
+		页面一开始渲染的时候（这个无法避免）；
 		因为回流是根据视口的大小来计算元素的位置和大小的，所以浏览器的窗口尺寸变化也会引发回流。
 	注意：回流一定会触发重绘，而重绘不一定会回流
 
@@ -14,7 +15,8 @@ DOM的重绘和回流 Repaint & Reflow
 	1.放弃使用传统操作DOM的方式，基于vue/react开始数据影响视图模式
 		mvvm/mvc/virtual dom/dom diff...
 	2.分离读写操作（现代浏览器都有渲染队列的机制）
-		OffsetTop，OffsetLeft，OffsetWidth，OffsetHeight，ClientTop，ClientLeft，ClinetWidth，ClientHeight，scrollTop，scrollLeft，scrollWidth，scrollHeight，getComputedStyle，currentStyle...会刷新队列
+		OffsetTop，OffsetLeft，OffsetWidth，OffsetHeight，ClientTop，ClientLeft，ClinetWidth，
+		ClientHeight，scrollTop，scrollLeft，scrollWidth，scrollHeight，getComputedStyle，currentStyle...会刷新队列
 	3.样式集中改变
 		div.style.cssText = 'width:20px;height:20px;'
 		div.className = 'box';
@@ -28,12 +30,13 @@ DOM的重绘和回流 Repaint & Reflow
         box.style.width = b + 10 + "px";
 		本质上是分离读写。
 	5.元素批量修改
-	6.动画效果应用到position属性为fixed的元素上（脱离文档流）
+	6.动画效果应用到position属性为fixed的元素上（脱离文档流），position: fixed是CSS固定定位，固定定位的盒子跟父级盒子无关，它是以屏幕为准
 		这个会有回流产生，但是不是影响整个页面的，只是局部的，所以也算是一种优化。
 	7.CSS3硬件加速（GPU加速）
 		比起考虑如何减少回流重绘，我们更期望的是，根本不要回流重绘；transform/opacity/filters...这些属性会触发硬件加速，不会引发回流和重绘。
 		但是可能会引发的坑：过多使用会占用大量内存，性能消耗严重，有时候会导致字体模糊等。
 	8.牺牲平滑度换取速度
-		每次1像素移动一个动画，但是如果此动画使用了100%的CPU，动画就会看上去是跳动的，因为浏览器正在与更新回流作斗争。每次移动3像素可能看起来平滑度低了，但它不会导致CPU在较慢的机器中抖动。
+		每次1像素移动一个动画，但是如果此动画使用了100%的CPU，动画就会看上去是跳动的，因为浏览器正在与更新回流作斗争。每次移动3像素可能看起来平滑度低了，
+		但它不会导致CPU在较慢的机器中抖动。
 	9.避免table布局和使用css的JavaScript表达式。
 		

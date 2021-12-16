@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>事件轮询机制</title>
+   </head>
+   <body>
+       <script type="text/javascript">
+           // 异步回调 ------宏任务
+           setTimeout(() => {
+                console.log('执行setTimeout回调');
+           }, 1000)
+
+           for(let index = 0; index<1000; index++){
+               console.log('测试');
+           }
+
+           /*
+           这里会等到循环执行完之后，然后经过一秒钟才执行setTimeout中的代码。在这里微任务队列中已经存在了setTimeout里的代码console.log('执行setTimeout回调');
+           但是还不会执行，会先执行完循环之后，经过一秒钟才会执行。
+           如果循环在setTimeout前面，则微队列中没有setTimeout里的代码console.log('执行setTimeout回调');
+           循环结束后经过一秒钟才会执行。
+           所以，千万不要在定时器后面放大量的代码块（会阻塞定时器，导致定时器不准确）
+           */
+
+           /*
+           面试题：谈谈你对js是单线程的理解？js可以执行异步操作吗？
+                js是单线程都是同步去执行，但是js可以执行异步操作，谈js的事件轮询机制（js的事件轮询机制.png）
+           */
+
+       </script>
+   </body>
+</html>
