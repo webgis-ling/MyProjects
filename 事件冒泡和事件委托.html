@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>事件冒泡和事件委托</title>
+   </head>
+   <body>
+       <script type="text/javascript">
+        /*
+        1. 事件冒泡的流程
+            - 基于DOM树结构，事件在目标元素上处理后，会由内向外（上）逐层传递
+            简单说就是标签之间有嵌套关系，两个标签之间都有相同或者类似的事件（都是点击事件，或者一个是点击事件一个是鼠标按下事件），内部的事件触发了，
+            外部标签的事件也会自动触发
+            应用场景：事件代理/委托/委派
+        2. 事件委托的理解：
+            - 场景：如果想为ul标签下的所有li标签都绑定点击事件？
+                方式一：可以遍历ul标签下的所有li添加事件
+                但是这种方式有一个缺陷：如果有另一个点击事件往ul添加li元素，那么这个新增的li就不会有事件，这样就要用到事件委托
+                方式二（事件委托）：采用事件冒泡的原理，找到目标对象的父级元素，给ul绑定事件，由于事件冒泡的缘故，当触发目标li之后，ul上的事件就会被触发
+            - 优点：
+                减少内存占用（事件监听回调从n标为1），动态添加的内部元素也能响应，但是不要滥用
+
+
+        */
+       // 3. 封装一个绑定事件监听的函数
+       // 绑定事件监听的通用函数（不带委托）
+       function bindEvent1(ele, type, fn){
+            ele.addEventListener(type, fn);
+       }
+
+       // 注册事件和绑定事件监听是否一样？  不一样
+       // 如果我重复给一个元素注册两个一样的事件，最后只能触发最后注册的那个事件，也就是不能同时注册多个事件
+       // 注册事件
+    //    btn.onclick = function(){ // 被覆盖
+    //         console.log('1'); 
+    //    }
+    //    btn.onclick = function(){ // 触发这个
+    //        console.log('2');
+    //    }
+
+       // 需求：为按钮绑定多个事件
+       // 使用绑定事件监听，使用addEventListener()方法，可以为某个事件同时绑定多个回调函数
+       /*
+       * 绑定事件监听的通用函数（带委托）
+       * ele 父级标签，DOM对象
+       * type 事件类型
+       * fn 回调函数
+       * selector 子级目标元素
+       */
+       // 
+       function bindEvent2(ele, type, fn, selector){
+            ele.addEventListener(type, event =>{
+                // 得到发生事件的目标
+                const target = event.target;
+                if(selector){
+                    // 如果元素被指定的选择器字符串选择，返回true，否则返回false
+                    if(target.matches(selector)){
+                        // 委托绑定调用
+                        fn.call(target, event);
+                    }
+                }else{
+                    // 普通绑定调用
+                    fn.call(target, event);
+                }
+            })
+       }
+
+       const ul = document.getElementsByName('ul');
+       //调用 函数绑定事件
+       bindEvent2(ul, 'click', event =>{}, 'li');// 给li绑定click事件
+       bindEvent2(ul, 'click', event =>{});// 给ul绑定click事件
+       </script>
+       <ul>
+           <li></li>
+           <li></li>
+           <li></li>
+       </ul>
+   </body>
+</html>

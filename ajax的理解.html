@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>ajax的理解</title>
+   </head>
+   <body>
+       <script type="text/javascript">
+        /*
+        1. 
+        2. 区别Ajax请求与一般HTTP请求
+            - Ajax请求时一种特别的HTTP请求，对服务器端来说没有任何区别，区别在浏览器端
+                浏览器端发送请求：只有XHR和fetch发出的才是Ajax请求，其他所有的都是非Ajax请求
+                浏览器端接收到响应：
+                    一般请求：浏览器端一般会直接显示响应体数据，也就是我们常说的刷新/跳转页面
+                    Ajax请求：浏览器不会对页面进行任何更新操作，只是调用监视的回调函数并传入响应相关数据
+       */
+
+       // 封装一个简易的Ajax异步请求
+       function ajax(url){
+           return new Promise((resole, reject) =>{
+               // 创建一个XHR对象
+               const xhr = new XMLHttpRequest();
+               // 初始化一个异步请求（还没发请求）
+               xhr.open('GET', url, true);
+               xhr.onreadystatechange = function(){
+                   /*
+                   ajax引擎得到响应数据后，将readyState的属性指定为4，将响应数据保存在response / responseText属性上，调用此回调函数
+                   */
+                  // 如果状态不为4，直接结束（请求还没有结束）
+                  if(xhr.readyState !== 4){
+                      return;
+                  }
+                  // 如果响应码在200-299之间，说明请求是成功的
+                  if(xhr.readyState>=200 && xhr.readyState<200){
+                      // 指定peomise成功及结果值
+                      resole(JSON.parse(xhr.responseText));
+                  } else {// 请求失败了
+                    // 指定promise失败及结果
+                    reject(new Error('request error status' + request.status));
+                  }
+               }
+               xhr.send(null);
+           })
+       }
+
+       /*
+       xhr + promise 封装一个异步Ajax请求的通用函数  加强版
+            返回值：promise
+            参数为配置对象
+                url：请求地址
+                params：包含所有query请求参数的对象
+                data：包含所有请求体参数数据的对象
+                method：为请求方式
+       */
+      function axios({url, params={}, data={}, method='GET'}){
+          // 返回一个promise对象
+          return new Promise((resole, reject) =>{
+              // 创建一个XHR对象
+              const xhr = new XMLHttpRequest();
+              // 根据params拼接query参数
+              let queryStr = Object.key(params).reduce((pre, key) =>{
+                  pre += `&${key}=${params[key]}`
+                  return pre;
+              }, '');
+              if(queryStr.length>0){
+                  queryStr = queryStr.substring(1);
+                  url += '?' +queryStr;
+              }
+              // 请求方式转换为大写
+              method = method.toUpperCase();
+              // 初始化一个异步请求（还没发请求）
+              request.open(method, url, true);
+              // 绑定请求状态改变的监听
+              request.onreadystatechange = function(){
+                  // 如果状态不为4，直接结束（请求还没有结束）
+                  if(xhr.readyState !== 4){
+                      return;
+                  }
+                  // 如果响应码在200-299之间，说明请求是成功的
+                  if(xhr.readyState>=200 && xhr.readyState<200){
+                      // 准备响应数据对象
+                      const responseData = {
+                          data: JSON.parse(request.response),
+                          status: request.status,
+                          statusText: request.statusText
+                      }
+                      // 指定peomise成功及结果值
+                      resole(responseData);
+                  } else {// 请求失败了
+                    // 指定promise失败及结果
+                    const error = new Error('request error status' + request.status);
+                    reject(error);
+                  }
+              }
+
+              // 如果是post/put请求
+              if(method === 'POST' || method === 'PUT' || method === 'DELETE'){
+                  // 设置请求头：使请求体参数以json形式传递
+                  request.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+                  //包含所有请求参数的对象转换为json形式传递
+                  const dataJson = JSON.stringify(data);
+                  // 发送请求，指定请求体数据
+                  request.send(dataJson);
+              } else {// GET请求
+                  // 发送请求
+                  request.send(null);
+              }
+          })
+      }
+       
+       </script>
+       <ul>
+           <li></li>
+           <li></li>
+           <li></li>
+       </ul>
+   </body>
+</html>
