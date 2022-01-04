@@ -9,7 +9,11 @@
    <body>
        <script type="text/javascript">
         /*
-        1. 
+        1. xhr.status请求状态码
+                - 2xx：表示成功处理请求，如200，201
+                - 3xx：需要重定向，浏览器直接跳转，如302
+                - 4xx：客户端请求错误，如401，404
+                - 5xx：服务器端错误，如500
         2. 区别Ajax请求与一般HTTP请求
             - Ajax请求时一种特别的HTTP请求，对服务器端来说没有任何区别，区别在浏览器端
                 浏览器端发送请求：只有XHR和fetch发出的才是Ajax请求，其他所有的都是非Ajax请求
@@ -61,7 +65,7 @@
               // 创建一个XHR对象
               const xhr = new XMLHttpRequest();
               // 根据params拼接query参数
-              let queryStr = Object.key(params).reduce((pre, key) =>{
+              let queryStr = Object.keys(params).reduce((pre, key) =>{
                   pre += `&${key}=${params[key]}`
                   return pre;
               }, '');
@@ -72,26 +76,26 @@
               // 请求方式转换为大写
               method = method.toUpperCase();
               // 初始化一个异步请求（还没发请求）
-              request.open(method, url, true);
+              xhr.open(method, url, true);
               // 绑定请求状态改变的监听
-              request.onreadystatechange = function(){
+              xhr.onreadystatechange = function(){
                   // 如果状态不为4，直接结束（请求还没有结束）
                   if(xhr.readyState !== 4){
                       return;
                   }
                   // 如果响应码在200-299之间，说明请求是成功的
-                  if(xhr.readyState>=200 && xhr.readyState<200){
+                  if(xhr.readyState>=200 && xhr.readyState<300){
                       // 准备响应数据对象
                       const responseData = {
-                          data: JSON.parse(request.response),
-                          status: request.status,
-                          statusText: request.statusText
+                          data: JSON.parse(xhr.response),
+                          status: xhr.status,
+                          statusText: xhr.statusText
                       }
                       // 指定peomise成功及结果值
                       resole(responseData);
                   } else {// 请求失败了
                     // 指定promise失败及结果
-                    const error = new Error('request error status' + request.status);
+                    const error = new Error('request error status' + xhr.status);
                     reject(error);
                   }
               }
@@ -99,14 +103,14 @@
               // 如果是post/put请求
               if(method === 'POST' || method === 'PUT' || method === 'DELETE'){
                   // 设置请求头：使请求体参数以json形式传递
-                  request.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+                  xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
                   //包含所有请求参数的对象转换为json形式传递
                   const dataJson = JSON.stringify(data);
                   // 发送请求，指定请求体数据
-                  request.send(dataJson);
+                  xhr.send(dataJson);
               } else {// GET请求
                   // 发送请求
-                  request.send(null);
+                  xhr.send(null);
               }
           })
       }

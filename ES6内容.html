@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>ES6</title>
+   </head>
+   <body>
+       <script type="text/javascript">
+           /*
+           ES5给Object扩展了一些静态方法，其中最常用的一共有两个：
+                1. Object.create(prototype, [descriptors])创建对象并继承
+                    - 作用：以指定对象为原型创建新的对象
+                    - 为新的对象指定新的属性，并对属性进行描述
+                    - value：指定的值
+                    - weitable：标识当前属性值是否可以修改，默认为false
+                    - configurable：标识当前属性是否可以删除，默认是false
+                    - enumberable：标识当前属性是否能用for in枚举，默认为false
+                    - for-in（性能问题）不仅枚举自身属性，也可以枚举原型对象上的属性，一半配合对象.hasOwnProperty()方法
+                2. Object.defineProperties(object, descriptors)
+                    - 作用：为指定对象扩展多个属性
+                    - get：用来获取当前属性值的回调函数
+                    - set：修改当前属性值的触发的回调函数，并且实参为修改后的值
+                    - 存储器属性：setter，getter一个用来存值，一个用来取值
+                        对象本身有两个方法：
+                            getPropertyName(){}用来的到当前属性值的回调函数
+                            setPropertyName(){}用来监视当前属性值变化的回调函数
+            ES5数组的扩展方法：
+                - Array.prototype.indexOf(value) 得到数组中的某个数据的第一个下标，用来找数据的
+                - Array.prototype.lastIndexOf(value) 得到数组中某个数据的最后一个下标
+                - Array.prototype.forEach(function(item, index){}) 遍历数组
+                - Array.prototype.map(function(item, index){}) 遍历数组，返回新数组
+                - Array.prototype.filter(function(item, index){}) 遍历数组，返回过滤后的数组
+
+            ES6中新增的内容：
+                1. 箭头函数
+                2. 三点运算符：打包和拆包
+                3. 形参默认值：简化函数的形参语法 function f1(url, data={}, type='GET'){}，这种带有默认值的参数叫做形参的默认值
+                4. Symbol：
+                    - ES5中对象的属性名是字符串，容易造成重名，污染环境
+                    - 概念：ES6中添加了一种原始数据类型Symbol（已有的原始数据类型：String，Number，Boolean，null，undefined，对象）
+                    - 特点：
+                        * Symbol对应的值是唯一的，解决明明冲突问题
+                        * Symbol值不能与其他数据进行计算，包括同字符串拼串
+                        * for in和for of遍历时不会遍历symbol属性
+                    - 使用：
+                        * 调用Symbol函数被得到symbol值
+                            let symbol = Symbol()
+                            let obj = {}; obj[symbol] = 'hello'
+                    - 传参标识：
+                        let symbol = Symbol('one');
+                        let symbol2 = Symbol('two');
+                        console.log(symbol);
+                        console.log(symbol2);
+                    - 定义常量标识
+                        const person_kry = Symbol('person_key');
+                        console.log(person_key)
+                    - 内置symbol值
+                        * 除了自己定义的Symbol之外，ES6还提供了11个内置的Symbol值，指向语言内部使用的方法
+                        Symbol.iterator：对象Symbol的iterator属性，指向该对象的默认遍历器方法
+                5. iterator是一种接口机制，为各种不同的数据结构提供统一的访问机制
+                    - 作用：为各种数据结构提供一种统一的，简便的访问接口，使得数据结构的成员能够按某种次序排列
+                        ES6创造了一种新的遍历命令，for..of循环，Iterator接口主要提供for..of消费
+                    - 工作原理
+                        创建一个指针对象（遍历器对象），指向数据结构的起始位置，第一次调用next方法，指针指向数据结构的第一个成员，
+                        接下来不断调用next方法，指针会一直往后移，直到指向最后一个成员，
+                        每调用一次next方法返回的是一个value和done的对象：{value：当前成员的值，done：布尔值}，
+                        value表示当前成员的值，done对应的布尔值表示当前的数据结构是否遍历结束，
+                        当遍历结束返回的value是undefine，done的值是false，原生具备iterator接口的数据（可用for of遍历）
+                    - 扩展理解：
+                        当数据结构上部署了Symbol.iterator接口，该数据可用for of遍历
+                        当使用for of去遍历目标数据的时候，该数据会自动去找Symbol.iterator
+                    - Symbol.iterator属性指向对象默认遍历器方法（iterator接口）
+                        Array，arguments，set容器，map容器，String......
+                6. Generator函数
+                    - 概念：ES6提供的解决异步编程的方案之一，Generator函数是一个状态，内部封装了不同状态数据，用来生成遍历对象，
+                    可暂停函数（惰性求值），yield可暂停，next方法可启动，每次返回yield后的表达式结果
+                    - 特点：
+                        function与函数名之间有一个星号，内部用yield表达式来定义不同的状态
+                        例如：
+                            function *generatorExample(){
+                                let result = yield 'hello' // 状态值为 hello
+                                yield 'generator' // 状态值为generator
+                            }
+                        generator返回的是指针对象（接iterator），而不会执行函数内部逻辑，
+                        调用next方法内部逻辑开始执行，遇到yield表达式停止，返回{value：yield表达式后的结果值/undefine，done：true}，
+                        再次调用next方法会从上次停止的yield处开始，直到最后，yield返回的结果通常为undefine，当调用next方法时，
+                        传参内容会作为启动时yield语句的返回值
+                7. saync函数时generator函数的语法糖
+                    - 概念：真正意义上去解决异步回调问题，同步流程表达异步操作
+                    - 本质：generator的语法糖
+                    - 语法：
+                            async function foo(){
+                                await 异步操作;
+                                await 异步操作;
+                            }
+                    - 特点：
+                        不需要像Generator去调用next方法，遇到await等待，当你的异步操作完成就往下执行，返回的总是promise对象，
+                        可以用then方法进行下一步操作，async取代的时Generator函数的星号*，await取代的是Generator的yield，语义上更为明确，
+                        使用简单，经验证暂时没有副作用
+                        await是暂停，但是必须跟着promise对象才会暂停，其他的都不会暂停
+                8. 字符串扩展
+                    - includes(str) 判断是否包含指定的字符串
+                    - startWith(str) 判断是否以指定字符串开头
+                    - endsWith(str) 判断是否以指定字符串结束
+                    - repeat(count) 重复指定的次数
+                9. 数组扩展
+                    - Array.from(伪数组) 伪数组转真数组
+                    - Array.of(val1, val2, val3) 将一些列数转为数组
+                    - find(回调) 找出第一个满足条件的元素
+                    - findIndex(回调) 找出第一个满足条件的元素的下标
+                10. 对象扩展
+                    - Object.is(v1, v2);
+                    - Object.assign(target, obj1, obj2) 将对象的属性复制到目标对象上
+                    - 直接操作__proto__属性
+                            let obj2 = {};
+                            obj2.__proto__ = obj1;
+
+
+           */
+           // ES6中import()方法返回的是promise对象
+       </script>
+   </body>
+</html>
